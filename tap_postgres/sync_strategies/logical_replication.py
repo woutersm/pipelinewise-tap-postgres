@@ -487,27 +487,8 @@ def consume_message(streams, state, msg, time_extracted, conn_info):
             target_stream["tap_stream_id"],
         )
 
-        LOGGER.info("Original stream: %s", json.dumps(target_stream))
-
-        modified_target_stream = copy.deepcopy(target_stream)
-
-        for col in toast_columns:
-            modified_target_stream["schema"]["properties"].pop(col)
-
-        LOGGER.info("Modified stream: %s", json.dumps(modified_target_stream))
-
-        sync_common.send_schema_message(modified_target_stream, ["lsn"])
-
-        singer.write_message(record_message)
-
-        # Reset the schema to the original one to avoid subsequent records missing columns
-        sync_common.send_schema_message(target_stream, ["lsn"])
-    else:
-        singer.write_message(record_message)
-
-    state = singer.write_bookmark(
-        state, target_stream["tap_stream_id"], "lsn", lsn
-    )
+    singer.write_message(record_message)
+    state = singer.write_bookmark(state, target_stream['tap_stream_id'], 'lsn', lsn)
 
     return state
 
