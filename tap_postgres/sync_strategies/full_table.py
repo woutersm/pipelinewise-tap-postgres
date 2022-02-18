@@ -129,7 +129,7 @@ def sync_table(conn_info, stream, state, desired_columns, md_map):
                 if xmin:
                     LOGGER.info("Resuming Full Table replication %s from xmin %s", nascent_stream_version, xmin)
                     select_sql = """SELECT {}, xmin::text::bigint
-                                      FROM {} where age(xmin::xid) <= age('{}'::xid)
+                                      FROM {} where xmin::text >= '{}'::text
                                      ORDER BY xmin::text ASC""".format(','.join(escaped_columns),
                                                                        fq_table_name,
                                                                        xmin)

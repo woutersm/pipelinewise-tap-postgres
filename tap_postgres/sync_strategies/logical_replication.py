@@ -481,6 +481,7 @@ def consume_message(streams, state, msg, time_extracted, conn_info):
         )
 
     if toast_columns:
+        # TODO: also log the row ID that's affected, requires knowing the primary key per stream
         LOGGER.info(
             "Found toast columns %s for stream %s",
             toast_columns,
