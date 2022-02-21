@@ -129,10 +129,10 @@ def sync_table(conn_info, stream, state, desired_columns, md_map):
                 if xmin:
                     LOGGER.info("Resuming Full Table replication %s from xmin %s", nascent_stream_version, xmin)
                     select_sql = """SELECT {}, xmin::text::bigint
-                                      FROM {} where xmin::text >= '{}'::text
-                                     ORDER BY xmin::text ASC""".format(','.join(escaped_columns),
-                                                                       fq_table_name,
-                                                                       xmin)
+                                       FROM {} where xmin::text::bigint >= '{}'::text::bigint
+                                     ORDER BY
+                                       CASE WHEN sign(xmin::text::bigint) = -1 THEN xmin::text::bigint + 2 * max int
+                                       ELSE xmin::text::bigint
                 else:
                     LOGGER.info("Beginning new Full Table replication %s", nascent_stream_version)
                     select_sql = """SELECT {}, xmin::text::bigint
